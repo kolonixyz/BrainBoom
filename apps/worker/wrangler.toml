@@ -1,0 +1,32 @@
+name = "brainboom-worker"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "pnpm run build"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "brainboom-db"
+database_id = "PLACEHOLDER_DB_ID"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "brainboom-uploads"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "PLACEHOLDER_KV_ID"
+
+[durable_objects]
+bindings = [
+  { name = "CHAT_ROOM", class_name = "ChatRoom" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ChatRoom"]
+
+[vars]
+ENVIRONMENT = "production"
