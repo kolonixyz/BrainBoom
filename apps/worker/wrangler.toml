@@ -3,13 +3,10 @@ main = "src/index.ts"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
-[build]
-command = "pnpm run build"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "brainboom-db"
-database_id = "PLACEHOLDER_DB_ID"
+database_id = "dac3b9d5-ddbb-400f-a360-dffa555343fc"
 
 [[r2_buckets]]
 binding = "R2"
@@ -17,7 +14,7 @@ bucket_name = "brainboom-uploads"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "PLACEHOLDER_KV_ID"
+id = "4ace97acae5448dd91e8f654840b0ac0"
 
 [durable_objects]
 bindings = [
