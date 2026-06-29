@@ -6,7 +6,8 @@
   "scripts": {
     "generate": "drizzle-kit generate",
     "push": "drizzle-kit push",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "echo 'DB package - no build needed'"
   },
   "dependencies": {
     "drizzle-orm": "^0.31.0"
