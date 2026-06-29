@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev",
-    "build": "wrangler deploy --dry-run",
+    "build": "echo 'Worker build skipped in CF Pages'",
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit"
   },
