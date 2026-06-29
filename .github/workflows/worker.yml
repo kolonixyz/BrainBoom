@@ -35,3 +35,12 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Set Worker secrets
+        run: |
+          echo "${{ secrets.JWT_SECRET }}" | npx wrangler secret put JWT_SECRET --name brainboom-worker
+          echo "${{ secrets.DEV_ACCESS_CODE }}" | npx wrangler secret put DEV_ACCESS_CODE --name brainboom-worker
+        working-directory: apps/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
