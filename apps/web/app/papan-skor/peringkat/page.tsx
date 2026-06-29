@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppContainer } from "../../../components/layout/AppContainer";
 import { ContactList } from "../../../components/chat/ContactList";
+import { ChatRoom } from "../../../components/chat/ChatRoom";
 import { useAuth } from "../../../hooks/useAuth";
 import { apiRequest } from "../../../lib/utils";
 
@@ -14,18 +15,58 @@ interface Contact {
 export default function PeringkatPage() {
     const { token, user } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const roomId = searchParams.get("room");
+
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [roomName, setRoomName] = useState("Chat Personal");
 
     const load = useCallback(async () => {
         if (!token) return;
         setIsLoading(true);
-        try { const data = await apiRequest<{ contacts: Contact[] }>("/api/contacts", {}, token); setContacts(data.contacts); }
-        catch { /* ignore */ } finally { setIsLoading(false); }
+        try {
+            const data = await apiRequest<{ contacts: Contact[] }>("/api/contacts", {}, token);
+            setContacts(data.contacts);
+        } catch { } finally { setIsLoading(false); }
     }, [token]);
 
     useEffect(() => { load(); }, [load]);
 
+    useEffect(() => {
+        if (roomId && contacts.length > 0) {
+            const found = contacts.find(c => c.roomId === Number(roomId));
+            if (found) setRoomName(found.displayName);
+        }
+    }, [roomId, contacts]);
+
+    const handleDelete = async (msgId: number | string) => {
+        if (!token) return;
+        try { await apiRequest(`/api/messages/${msgId}`, { method: "DELETE" }, token); } catch { }
+    };
+
+    if (!token || !user) return null;
+
+    // Chat view — when ?room= param is present
+    if (roomId) {
+        return (
+            <AppContainer>
+                <div className="h-full">
+                    <ChatRoom
+                        roomId={roomId}
+                        token={token}
+                        currentUserId={user.id}
+                        isAdmin={user.role === "admin" || user.role === "developer"}
+                        roomName={roomName}
+                        onBack={() => router.push("/papan-skor/peringkat")}
+                        onDeleteMessage={handleDelete}
+                    />
+                </div>
+            </AppContainer>
+        );
+    }
+
+    // List view — default
     return (
         <AppContainer>
             <div className="flex flex-col h-full">
@@ -33,12 +74,12 @@ export default function PeringkatPage() {
                     <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Peringkat Personal 🏆</h2>
                 </div>
                 <div className="flex-1 overflow-y-auto">
-                    <ContactList contacts={contacts} isLoading={isLoading}
-                        onSelect={(roomId) => router.push(`/papan-skor/peringkat/${roomId}`)} />
+                    <ContactList
+                        contacts={contacts}
+                        isLoading={isLoading}
+                        onSelect={(rid) => router.push(`/papan-skor/peringkat?room=${rid}`)}
+                    />
                 </div>
-                {user?.role === "admin" && (
-                    <button className="fixed bottom-20 right-4 w-12 h-12 bg-blue-600 hover:bg-blue-500 rounded-full shadow-lg flex items-center justify-center text-white text-xl transition-all active:scale-90">➕</button>
-                )}
             </div>
         </AppContainer>
     );
