@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppContainer } from "../../../components/layout/AppContainer";
 import { ContactList } from "../../../components/chat/ContactList";
@@ -12,7 +12,7 @@ interface Contact {
     roomId: number; lastMessage: { content: string; createdAt: string } | null; unreadCount: number;
 }
 
-export default function PeringkatPage() {
+function PeringkatContent() {
     const { token, user } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -47,7 +47,6 @@ export default function PeringkatPage() {
 
     if (!token || !user) return null;
 
-    // Chat view — when ?room= param is present
     if (roomId) {
         return (
             <AppContainer>
@@ -66,7 +65,6 @@ export default function PeringkatPage() {
         );
     }
 
-    // List view — default
     return (
         <AppContainer>
             <div className="flex flex-col h-full">
@@ -82,5 +80,17 @@ export default function PeringkatPage() {
                 </div>
             </div>
         </AppContainer>
+    );
+}
+
+export default function PeringkatPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+                <div className="text-white text-4xl animate-pulse">🏆</div>
+            </div>
+        }>
+            <PeringkatContent />
+        </Suspense>
     );
 }
