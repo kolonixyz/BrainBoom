@@ -4,8 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/web/**"
-      - "packages/**"
+      - 'apps/web/**'
+      - 'packages/**'
+      - '.github/workflows/web.yml'
   workflow_dispatch:
 
 jobs:
@@ -28,10 +29,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build web
         run: pnpm --filter @brainboom/web run build
@@ -45,5 +45,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: brainboom-web
-          directory: apps/web/.next
+          directory: apps/web/out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
