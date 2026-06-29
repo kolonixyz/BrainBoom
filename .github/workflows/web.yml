@@ -33,17 +33,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Build web
+      - name: Build web (static export)
         run: pnpm --filter @brainboom/web run build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_WS_URL: ${{ secrets.NEXT_PUBLIC_WS_URL }}
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: brainboom-web
-          directory: apps/web/out
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy apps/web/out --project-name=brainboom-web --commit-dirty=true
