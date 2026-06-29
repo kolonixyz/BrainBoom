@@ -1,21 +1,15 @@
 name: Deploy Web (Cloudflare Pages)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - '.github/workflows/web.yml'
   workflow_dispatch:
+
+# NOTE: Cloudflare Pages auto-deploys via GitHub integration on push to main.
+# This workflow is for manual re-deploy only.
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Publish to Cloudflare Pages
-    permissions:
-      contents: read
-      deployments: write
+    name: Manual deploy to Cloudflare Pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,8 +27,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Build web (static export)
-        run: pnpm --filter @brainboom/web run build
+      - name: Build
+        run: pnpm build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_WS_URL: ${{ secrets.NEXT_PUBLIC_WS_URL }}
@@ -44,4 +38,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/out --project-name=brainboom-web --commit-dirty=true
+          command: pages deploy apps/web/out --project-name=brainboom --commit-dirty=true
